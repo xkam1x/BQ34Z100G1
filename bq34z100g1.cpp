@@ -119,6 +119,26 @@ void BQ34Z100G1::unsealed() {
     Wire.endTransmission();
 }
 
+void BQ34Z100G1::enter_calibration() {
+    unsealed();
+    do {
+        cal_enable();
+        enter_cal();
+        delay(1000);
+    } while (!(control_status() & 0x1000)); // CALEN
+}
+
+void BQ34Z100G1::exit_calibration() {
+    do {
+        exit_cal();
+        delay(1000);
+    } while (!(control_status() &~ 0x1000)); // CALEN
+    
+    delay(150);
+    reset();
+    delay(150);
+}
+
 bool BQ34Z100G1::update_design_capacity(int16_t capacity) {
     unsealed();
     read_flash_block(48, 0);
@@ -396,26 +416,6 @@ bool BQ34Z100G1::update_charge_termination_parameters(int16_t taper_current, int
         return false;
     }
     return true;
-}
-
-void BQ34Z100G1::enter_calibration() {
-    unsealed();
-    do {
-        cal_enable();
-        enter_cal();
-        delay(1000);
-    } while (!(control_status() & 0x1000)); // CALEN
-}
-
-void BQ34Z100G1::exit_calibration() {
-    do {
-        exit_cal();
-        delay(1000);
-    } while (!(control_status() &~ 0x1000)); // CALEN
-    
-    delay(150);
-    reset();
-    delay(150);
 }
 
 void BQ34Z100G1::calibrate_cc_offset() {
@@ -765,4 +765,44 @@ uint16_t BQ34Z100G1::pack_configuration() {
 
 uint16_t BQ34Z100G1::design_capacity() {
     return read_register(0x3c, 2);
+}
+
+uint8_t BQ34Z100G1::grid_number() {
+    return (uint8_t)read_register(0x62, 1);
+}
+
+uint8_t BQ34Z100G1::learned_status() {
+    return (uint8_t)read_register(0x63, 1);
+}
+
+uint16_t BQ34Z100G1::dod_at_eoc() {
+    return read_register(0x64, 2);
+}
+
+uint16_t BQ34Z100G1::q_start() {
+    return read_register(0x66, 2);
+}
+
+uint16_t BQ34Z100G1::true_fcc() {
+    return read_register(0x6a, 2);
+}
+
+uint16_t BQ34Z100G1::state_time() {
+    return read_register(0x6c, 2);
+}
+
+uint16_t BQ34Z100G1::q_max_passed_q() {
+    return read_register(0x6e, 2);
+}
+
+uint16_t BQ34Z100G1::dod_0() {
+    return read_register(0x70, 2);
+}
+
+uint16_t BQ34Z100G1::q_max_dod_0() {
+    return read_register(0x72, 2);
+}
+
+uint16_t BQ34Z100G1::q_max_time() {
+    return read_register(0x74, 2);
 }

@@ -43,6 +43,8 @@ class BQ34Z100G1 {
     uint32_t double_to_xemics(double value);
     
     void unsealed();
+    void enter_calibration();
+    void exit_calibration();
     
 public:
     
@@ -53,8 +55,6 @@ public:
     bool update_number_of_series_cells(uint8_t cells);
     bool update_pack_configuration(uint16_t config);
     bool update_charge_termination_parameters(int16_t taper_current, int16_t min_taper_capacity, int16_t cell_taper_voltage, uint8_t taper_window, int8_t tca_set, int8_t tca_clear, int8_t fc_set, int8_t fc_clear);
-    void enter_calibration();
-    void exit_calibration();
     void calibrate_cc_offset();
     void calibrate_board_offset();
     void calibrate_voltage_divider(uint16_t applied_voltage, uint8_t cells_count);
@@ -108,6 +108,16 @@ public:
     uint16_t charge_current(); // mA
     uint16_t pack_configuration();
     uint16_t design_capacity(); // mAh
+    uint8_t grid_number();
+    uint8_t learned_status();
+    uint16_t dod_at_eoc();
+    uint16_t q_start(); // mAh
+    uint16_t true_fcc(); // mAh
+    uint16_t state_time(); // s
+    uint16_t q_max_passed_q(); // mAh
+    uint16_t dod_0();
+    uint16_t q_max_dod_0();
+    uint16_t q_max_time();
 };
 
 #endif /* bq34z100g1_hpp */
